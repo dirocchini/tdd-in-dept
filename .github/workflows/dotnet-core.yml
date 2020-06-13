@@ -25,7 +25,8 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v1.3
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
-        # Set the sonar.projectBaseDir analysis property
         projectBaseDir: .
       
