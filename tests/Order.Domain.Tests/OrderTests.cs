@@ -125,8 +125,6 @@ namespace Domain.Tests
             Assert.Equal(totalPedido, order.TotalValue);
         }
 
-
-
         [Fact(DisplayName = "Update Item in Order - Quantity Should Be Valid")]
         [Trait("Category", "Sales - Order")]
         public void UpdateOrderItem_ItemInOrder_ShouldQuantityBeValid()
@@ -140,6 +138,19 @@ namespace Domain.Tests
 
             // Act 
             Assert.Throws<DomainException>(() => order.UpdateItem(item2));
+        }
+
+        [Fact(DisplayName = "Remove Item Not Order")]
+        [Trait("Category", "Sales - Order")]
+        public void RemoveOrderItem_ItemNotInOrder_ShouldReturnException()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var itemId = Guid.NewGuid();
+            var item = new Item(itemId, "product x", 2, 100.00);
+
+            // Act 
+            Assert.Throws<DomainException>(() => order.RemoveItem(item));
         }
     }
 }
