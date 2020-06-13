@@ -1,15 +1,10 @@
 ﻿using Core.DomainObjects;
-using Microsoft.VisualBasic;
+using Sales.Domain;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
 using Xunit;
 
-namespace Order.Domain.Tests
+namespace Domain.Tests
 {
     public class OrderTests
     {
@@ -75,122 +70,76 @@ namespace Order.Domain.Tests
             // Act & Assert
             Assert.Throws<DomainException>(() => order.AddItem(item2));
         }
-    }
 
-    public class Item
-    {
-        public Guid Id { get; }
-        public string Name { get; }
-        public int Quantity { get; private set; }
-        public double Value { get; }
-
-        public Item(Guid id, string name, int quantity, double value)
+        [Fact(DisplayName = "Update Item Not in Order")]
+        [Trait("Category", "Sales - Order")]
+        public void UpdateOrderItem_ItemNotInOrder_ShouldReturnException()
         {
-            if (quantity < Order.MIN_ITEM_QUANTITY_PER_ITEM) throw new DomainException($"Item min quantity allowed: {Order.MIN_ITEM_QUANTITY_PER_ITEM}. Quantity received: {quantity}");
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var item = new Item(Guid.NewGuid(), "product x", 2, 100.00);
 
-            Id = id;
-            Name = name;
-            Quantity = quantity;
-            Value = value;
+            // Act & Assert
+            Assert.Throws<DomainException>(() => order.UpdateItem(item));
         }
 
-        public void IncreaseQuantity(int quantity)
+        [Fact(DisplayName = "Update Item in Order")]
+        [Trait("Category", "Sales - Order")]
+        public void UpdateOrderItem_ItemInOrder_ShouldReplaceItem()
         {
-            Quantity += quantity;
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var itemId = Guid.NewGuid();
+            var item = new Item(itemId, "product x", 2, 100.00);
+            order.AddItem(item);
+            var item2 = new Item(itemId, "product x", 4, 100.00);
+            var newQuantity = item2.Quantity;
+
+            // Act 
+            order.UpdateItem(item2);
+
+            //Assert
+            Assert.Equal(newQuantity, order.Items.FirstOrDefault(i => i.Id == itemId).Quantity);
         }
 
-        public double CalculateValue()
+        [Fact(DisplayName = "Update Item in Order - Recalculate")]
+        [Trait("Category", "Sales - Order")]
+        public void UpdateOrderItem_ItemInOrder_ShouldRecalculateOrderTotal()
         {
-            return Quantity * Value;
-        }
-    }
+            //Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var itemId = Guid.NewGuid();
+            var item = new Item(Guid.NewGuid(), "product a", 2, 100.00);
+            var item2 = new Item(itemId, "product x", 4, 120.00);
 
-    public class Order
-    {
-        public static int MAX_ITEM_QUANTITY_PER_ITEM => 15;
-        public static int MIN_ITEM_QUANTITY_PER_ITEM => 1;
+            order.AddItem(item);
+            order.AddItem(item2);
 
+            var item2Updated = new Item(itemId, "product x", 6, 100.00);
+            var totalPedido = item.Quantity * item.Value + item2Updated.Quantity * item2Updated.Value;
 
-        protected Order()
-        {
-            _items = new Collection<Item>();
-        }
+            //Act
+            order.UpdateItem(item2Updated);
 
-        public Guid ClientId { get; private set; }
-        public double TotalValue { get; private set; }
-        public OrderStatus OrderStatus { get; private set; }
-        private readonly Collection<Item> _items;
-        public IReadOnlyCollection<Item> Items => _items;
-
-
-
-        public void AddItem(Item item)
-        {
-            CheckAllowedItemQuantity(item);
-
-            if (ItemExists(item))
-            {
-                var existingItem = _items.FirstOrDefault(p => p.Id == item.Id);
-
-                existingItem.IncreaseQuantity(item.Quantity);
-                item = existingItem;
-
-                _items.Remove(existingItem);
-            }
-
-            _items.Add(item);
-            CalculateValue();
+            //Assert
+            Assert.Equal(totalPedido, order.TotalValue);
         }
 
-        private void CheckAllowedItemQuantity(Item item)
+
+
+        [Fact(DisplayName = "Update Item in Order - Quantity Should Be Valid")]
+        [Trait("Category", "Sales - Order")]
+        public void UpdateOrderItem_ItemInOrder_ShouldQuantityBeValid()
         {
-            var quantity = item.Quantity;
-            if (ItemExists(item))
-            {
-                var existingItem = _items.FirstOrDefault(p => p.Id == item.Id);
-                quantity += existingItem.Quantity;
-            }
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var itemId = Guid.NewGuid();
+            var item = new Item(itemId, "product x", 2, 100.00);
+            order.AddItem(item);
+            var item2 = new Item(itemId, "product x", Order.MAX_ITEM_QUANTITY_PER_ITEM + 1, 100.00);
 
-            if (quantity > MAX_ITEM_QUANTITY_PER_ITEM) throw new DomainException($"Item max quantity allowed: {MAX_ITEM_QUANTITY_PER_ITEM}. Quantity received: {item.Quantity}");
-        }
-
-        private bool ItemExists(Item item)
-        {
-            return _items.Any(p => p.Id == item.Id);
-        }
-
-        private void CalculateValue()
-        {
-            TotalValue = _items.Sum(i => i.CalculateValue());
-        }
-
-        public void SetOrderStatusDraft()
-        {
-            OrderStatus = OrderStatus.Draft;
-        }
-
-        public class OrderFactory
-        {
-            public static Order NewDraftOrder(Guid clientId)
-            {
-                var order = new Order
-                {
-                    ClientId = clientId
-                };
-
-                order.SetOrderStatusDraft();
-                return order;
-            }
+            // Act 
+            Assert.Throws<DomainException>(() => order.UpdateItem(item2));
         }
     }
-
-    public enum OrderStatus
-    {
-        Draft = 0,
-        Started = 1,
-        Paid = 4,
-        Delivered = 5,
-        Cancelled = 6
-    }
-
 }

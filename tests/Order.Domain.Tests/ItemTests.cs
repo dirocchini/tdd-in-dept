@@ -1,10 +1,9 @@
 ﻿using Core.DomainObjects;
+using Sales.Domain;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
-namespace Order.Domain.Tests
+namespace Domain.Tests
 {
     public class ItemTests
     {
