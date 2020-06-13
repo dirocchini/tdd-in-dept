@@ -105,7 +105,11 @@ namespace Sales.Domain
         {
             CheckItemInOrder(item);
 
+            var existingItem = _items.FirstOrDefault(i => i.Id == item.Id);
+            _items.Remove(existingItem);
+
+            CalculateValue();
+
         }
     }
-
 }
