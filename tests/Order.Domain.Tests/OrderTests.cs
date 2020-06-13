@@ -14,7 +14,7 @@ namespace Order.Domain.Tests
     public class OrderTests
     {
         [Fact(DisplayName = "Add Item In New Order")]
-        [Trait("Category", "Order")]
+        [Trait("Category", "Sales - Order")]
         public void AddItem_NewOrder_ShouldUpdateValue()
         {
             // Arrange
@@ -29,7 +29,7 @@ namespace Order.Domain.Tests
         }
 
         [Fact(DisplayName = "Add Item Already In Order")]
-        [Trait("Category", "Order")]
+        [Trait("Category", "Sales - Order")]
         public void AddItem_OrderWithItem_ShouldAddItemQuantity()
         {
             // Arrange
@@ -49,8 +49,8 @@ namespace Order.Domain.Tests
         }
 
         [Fact(DisplayName = "Add Item With Quantity More Than Allowed")]
-        [Trait("Category", "Order")]
-        public void AddOrderItem_ItemWithMoreAllowed_ShouldReturnException()
+        [Trait("Category", "Sales - Order")]
+        public void AddOrderItem_ItemWithMoreAllowedQuantity_ShouldReturnException()
         {
             // Arrange
             var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
@@ -59,6 +59,21 @@ namespace Order.Domain.Tests
 
             // Act & Assert
             Assert.Throws<DomainException>(() => order.AddItem(item));
+        }
+
+        [Fact(DisplayName = "Add Item Already In Order With More Quantity Than Allowed")]
+        [Trait("Category", "Sales - Order")]
+        public void AddItem_OrderWithItemMoreThanAllowedQuantity_ShouldAddItemQuantity()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var itemId = Guid.NewGuid();
+            var item = new Item(itemId, "product x", 2, 100.00);
+            order.AddItem(item);
+            var item2 = new Item(itemId, "product x", Order.MAX_ITEM_QUANTITY_PER_ITEM, 100.00);
+
+            // Act & Assert
+            Assert.Throws<DomainException>(() => order.AddItem(item2));
         }
     }
 
@@ -111,11 +126,12 @@ namespace Order.Domain.Tests
 
         public void AddItem(Item item)
         {
-            if (item.Quantity > MAX_ITEM_QUANTITY_PER_ITEM) throw new DomainException($"Item max quantity allowed: {MAX_ITEM_QUANTITY_PER_ITEM}. Quantity received: {item.Quantity}");
+            CheckAllowedItemQuantity(item);
 
-            if (_items.Any(p => p.Id == item.Id))
+            if (ItemExists(item))
             {
                 var existingItem = _items.FirstOrDefault(p => p.Id == item.Id);
+
                 existingItem.IncreaseQuantity(item.Quantity);
                 item = existingItem;
 
@@ -124,6 +140,23 @@ namespace Order.Domain.Tests
 
             _items.Add(item);
             CalculateValue();
+        }
+
+        private void CheckAllowedItemQuantity(Item item)
+        {
+            var quantity = item.Quantity;
+            if (ItemExists(item))
+            {
+                var existingItem = _items.FirstOrDefault(p => p.Id == item.Id);
+                quantity += existingItem.Quantity;
+            }
+
+            if (quantity > MAX_ITEM_QUANTITY_PER_ITEM) throw new DomainException($"Item max quantity allowed: {MAX_ITEM_QUANTITY_PER_ITEM}. Quantity received: {item.Quantity}");
+        }
+
+        private bool ItemExists(Item item)
+        {
+            return _items.Any(p => p.Id == item.Id);
         }
 
         private void CalculateValue()

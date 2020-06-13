@@ -9,7 +9,7 @@ namespace Order.Domain.Tests
     public class ItemTests
     {
         [Fact(DisplayName = "Create Item With Quantity Less Than Allowed")]
-        [Trait("Category", "Item")]
+        [Trait("Category", "Sales - Order - Item")]
         public void CreateItem_ItemWithLessAllowed_ShouldReturnException()
         {
             // Arrange & Act & Assert
