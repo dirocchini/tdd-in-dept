@@ -100,6 +100,16 @@ namespace Sales.Domain
         {
             if (!ItemExists(item)) throw new DomainException($"Item {item.Id} not in order");
         }
-    }
 
+        public void RemoveItem(Item item)
+        {
+            CheckItemInOrder(item);
+
+            var existingItem = _items.FirstOrDefault(i => i.Id == item.Id);
+            _items.Remove(existingItem);
+
+            CalculateValue();
+
+        }
+    }
 }
