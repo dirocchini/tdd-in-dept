@@ -1,11 +1,7 @@
 ﻿using Core.DomainObjects;
-using Microsoft.VisualBasic;
 using Sales.Domain;
 using System;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
 using Xunit;
 
 namespace Domain.Tests
@@ -74,6 +70,76 @@ namespace Domain.Tests
             // Act & Assert
             Assert.Throws<DomainException>(() => order.AddItem(item2));
         }
-    }
 
+        [Fact(DisplayName = "Update Item Not in Order")]
+        [Trait("Category", "Sales - Order")]
+        public void UpdateOrderItem_ItemNotInOrder_ShouldReturnException()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var item = new Item(Guid.NewGuid(), "product x", 2, 100.00);
+
+            // Act & Assert
+            Assert.Throws<DomainException>(() => order.UpdateItem(item));
+        }
+
+        [Fact(DisplayName = "Update Item in Order")]
+        [Trait("Category", "Sales - Order")]
+        public void UpdateOrderItem_ItemInOrder_ShouldReplaceItem()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var itemId = Guid.NewGuid();
+            var item = new Item(itemId, "product x", 2, 100.00);
+            order.AddItem(item);
+            var item2 = new Item(itemId, "product x", 4, 100.00);
+            var newQuantity = item2.Quantity;
+
+            // Act 
+            order.UpdateItem(item2);
+
+            //Assert
+            Assert.Equal(newQuantity, order.Items.FirstOrDefault(i => i.Id == itemId).Quantity);
+        }
+
+        [Fact(DisplayName = "Update Item in Order - Recalculate")]
+        [Trait("Category", "Sales - Order")]
+        public void UpdateOrderItem_ItemInOrder_ShouldRecalculateOrderTotal()
+        {
+            //Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var itemId = Guid.NewGuid();
+            var item = new Item(Guid.NewGuid(), "product a", 2, 100.00);
+            var item2 = new Item(itemId, "product x", 4, 120.00);
+
+            order.AddItem(item);
+            order.AddItem(item2);
+
+            var item2Updated = new Item(itemId, "product x", 6, 100.00);
+            var totalPedido = item.Quantity * item.Value + item2Updated.Quantity * item2Updated.Value;
+
+            //Act
+            order.UpdateItem(item2Updated);
+
+            //Assert
+            Assert.Equal(totalPedido, order.TotalValue);
+        }
+
+
+
+        [Fact(DisplayName = "Update Item in Order - Quantity Should Be Valid")]
+        [Trait("Category", "Sales - Order")]
+        public void UpdateOrderItem_ItemInOrder_ShouldQuantityBeValid()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var itemId = Guid.NewGuid();
+            var item = new Item(itemId, "product x", 2, 100.00);
+            order.AddItem(item);
+            var item2 = new Item(itemId, "product x", Order.MAX_ITEM_QUANTITY_PER_ITEM + 1, 100.00);
+
+            // Act 
+            Assert.Throws<DomainException>(() => order.UpdateItem(item2));
+        }
+    }
 }
