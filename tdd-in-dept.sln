@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sales.Domain", "src\Sales.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Order.Domain.Tests", "tests\Order.Domain.Tests\Order.Domain.Tests.csproj", "{74BFB2C9-C7D9-4F18-A7F6-CCD853F01658}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "src\Core\Core.csproj", "{FD1AAD95-849C-4939-A842-084B91D67FC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{74BFB2C9-C7D9-4F18-A7F6-CCD853F01658}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74BFB2C9-C7D9-4F18-A7F6-CCD853F01658}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74BFB2C9-C7D9-4F18-A7F6-CCD853F01658}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD1AAD95-849C-4939-A842-084B91D67FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD1AAD95-849C-4939-A842-084B91D67FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD1AAD95-849C-4939-A842-084B91D67FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD1AAD95-849C-4939-A842-084B91D67FC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -35,6 +41,7 @@ Global
 		{86CA1159-CD85-4D3F-82C8-024B5CE50DDA} = {53AD2BAC-70CD-4FAF-8127-32EB128441B6}
 		{41003CFE-3E5E-4CED-8287-41EA4C7738C0} = {6900CEA9-12F3-43A0-B8A6-347D72316815}
 		{74BFB2C9-C7D9-4F18-A7F6-CCD853F01658} = {86CA1159-CD85-4D3F-82C8-024B5CE50DDA}
+		{FD1AAD95-849C-4939-A842-084B91D67FC0} = {6900CEA9-12F3-43A0-B8A6-347D72316815}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2173821-2F86-49B5-A481-627FEA69FDB0}

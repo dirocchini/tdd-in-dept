@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic;
+﻿using Core.DomainObjects;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +13,7 @@ namespace Order.Domain.Tests
 {
     public class OrderTests
     {
-        [Fact(DisplayName = "Add Item New Order")]
+        [Fact(DisplayName = "Add Item In New Order")]
         [Trait("Category", "Order")]
         public void AddItem_NewOrder_ShouldUpdateValue()
         {
@@ -25,7 +26,6 @@ namespace Order.Domain.Tests
 
             // Assert
             Assert.Equal(200, order.TotalValue);
-
         }
 
         [Fact(DisplayName = "Add Item Already In Order")]
@@ -47,6 +47,19 @@ namespace Order.Domain.Tests
             Assert.Single(order.Items);
             Assert.Equal(3, order.Items.FirstOrDefault(p => p.Id == itemId)?.Quantity);
         }
+
+        [Fact(DisplayName = "Add Item With Quantity More Than Allowed")]
+        [Trait("Category", "Order")]
+        public void AddOrderItem_ItemWithMoreAllowed_ShouldReturnException()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var itemId = Guid.NewGuid();
+            var item = new Item(itemId, "product x", Order.MAX_ITEM_QUANTITY_PER_ITEM + 1, 100.00);
+
+            // Act & Assert
+            Assert.Throws<DomainException>(() => order.AddItem(item));
+        }
     }
 
     public class Item
@@ -58,6 +71,8 @@ namespace Order.Domain.Tests
 
         public Item(Guid id, string name, int quantity, double value)
         {
+            if (quantity < Order.MIN_ITEM_QUANTITY_PER_ITEM) throw new DomainException($"Item min quantity allowed: {Order.MIN_ITEM_QUANTITY_PER_ITEM}. Quantity received: {quantity}");
+
             Id = id;
             Name = name;
             Quantity = quantity;
@@ -77,6 +92,10 @@ namespace Order.Domain.Tests
 
     public class Order
     {
+        public static int MAX_ITEM_QUANTITY_PER_ITEM => 15;
+        public static int MIN_ITEM_QUANTITY_PER_ITEM => 1;
+
+
         protected Order()
         {
             _items = new Collection<Item>();
@@ -92,6 +111,8 @@ namespace Order.Domain.Tests
 
         public void AddItem(Item item)
         {
+            if (item.Quantity > MAX_ITEM_QUANTITY_PER_ITEM) throw new DomainException($"Item max quantity allowed: {MAX_ITEM_QUANTITY_PER_ITEM}. Quantity received: {item.Quantity}");
+
             if (_items.Any(p => p.Id == item.Id))
             {
                 var existingItem = _items.FirstOrDefault(p => p.Id == item.Id);
@@ -138,4 +159,5 @@ namespace Order.Domain.Tests
         Delivered = 5,
         Cancelled = 6
     }
+
 }
