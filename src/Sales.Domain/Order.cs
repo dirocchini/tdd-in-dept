@@ -1,4 +1,6 @@
 ﻿using Core.DomainObjects;
+using FluentValidation.Results;
+using Sales.Domain.VoucherEntities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,16 +14,22 @@ namespace Sales.Domain
         public static int MIN_ITEM_QUANTITY_PER_ITEM => 1;
 
 
+        public Guid ClientId { get; private set; }
+        public decimal TotalValue { get; private set; }
+        public OrderStatus OrderStatus { get; private set; }
+        private readonly Collection<Item> _items;
+        public IReadOnlyCollection<Item> Items => _items;
+
+        public Voucher Voucher { get; private set; }
+        public bool VoucherUsed { get; private set; }
+        public decimal DiscountValue { get; private set; }
+
         protected Order()
         {
             _items = new Collection<Item>();
         }
 
-        public Guid ClientId { get; private set; }
-        public double TotalValue { get; private set; }
-        public OrderStatus OrderStatus { get; private set; }
-        private readonly Collection<Item> _items;
-        public IReadOnlyCollection<Item> Items => _items;
+
 
 
 
@@ -110,6 +118,41 @@ namespace Sales.Domain
 
             CalculateValue();
 
+        }
+
+        public ValidationResult ApplyVoucher(Voucher voucher)
+        {
+            var result = voucher.Validate();
+            if (!result.IsValid) return result;
+
+            Voucher = voucher;
+            VoucherUsed = true;
+
+            CalculateTotalDiscountValue();
+
+            return result;
+        }
+
+        private void CalculateTotalDiscountValue()
+        {
+            if (!VoucherUsed) return;
+
+            if (Voucher.VoucherType == VoucherType.Value)
+            {
+                if (Voucher.DiscountValue.HasValue)
+                {
+                    DiscountValue = Voucher.DiscountValue.Value;
+                    TotalValue -= DiscountValue;
+                }
+            }
+            else
+            {
+                if (Voucher.DiscountPercentual.HasValue)
+                {
+                    DiscountValue = TotalValue * Voucher.DiscountPercentual.Value / 100;
+                    TotalValue -= DiscountValue;
+                }
+            }
         }
     }
 }

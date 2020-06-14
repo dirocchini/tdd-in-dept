@@ -8,9 +8,9 @@ namespace Sales.Domain
         public Guid Id { get; }
         public string Name { get; }
         public int Quantity { get; private set; }
-        public double Value { get; }
+        public decimal Value { get; }
 
-        public Item(Guid id, string name, int quantity, double value)
+        public Item(Guid id, string name, int quantity, decimal value)
         {
             if (quantity < Order.MIN_ITEM_QUANTITY_PER_ITEM) throw new DomainException($"Item min quantity allowed: {Order.MIN_ITEM_QUANTITY_PER_ITEM}. Quantity received: {quantity}");
 
@@ -25,7 +25,7 @@ namespace Sales.Domain
             Quantity += quantity;
         }
 
-        public double CalculateValue()
+        public decimal CalculateValue()
         {
             return Quantity * Value;
         }

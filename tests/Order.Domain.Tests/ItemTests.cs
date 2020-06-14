@@ -12,7 +12,7 @@ namespace Domain.Tests
         public void CreateItem_ItemWithLessAllowed_ShouldReturnException()
         {
             // Arrange & Act & Assert
-            Assert.Throws<DomainException>(() => new Item(Guid.NewGuid(), "product x", Order.MIN_ITEM_QUANTITY_PER_ITEM - 1, 100.00));
+            Assert.Throws<DomainException>(() => new Item(Guid.NewGuid(), "product x", Order.MIN_ITEM_QUANTITY_PER_ITEM - 1, 100.00M));
         }
     }
 }
