@@ -71,6 +71,7 @@ namespace Sales.Domain
         private void CalculateValue()
         {
             TotalValue = _items.Sum(i => i.CalculateValue());
+            CalculateTotalDiscountValue();
         }
 
         public void SetOrderStatusDraft()
@@ -153,6 +154,8 @@ namespace Sales.Domain
                     TotalValue -= DiscountValue;
                 }
             }
+
+            TotalValue = TotalValue <= 0 ? 0 : TotalValue;
         }
     }
 }

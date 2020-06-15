@@ -80,5 +80,7 @@ namespace Domain.Tests
             Assert.Contains(AplicableVoucherValidation.QuantityErrorMsg, result.Errors.Select(c => c.ErrorMessage));
             Assert.Contains(AplicableVoucherValidation.DiscountTypePercentualErrorMsg, result.Errors.Select(c => c.ErrorMessage));
         }
+
+
     }
 }

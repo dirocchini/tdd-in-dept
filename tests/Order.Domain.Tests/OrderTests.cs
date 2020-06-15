@@ -178,7 +178,7 @@ namespace Domain.Tests
         }
 
         [Fact(DisplayName = "Apply Valid Voucher")]
-        [Trait("Category", "Sales - Order")]
+        [Trait("Category", "Sales - Voucher")]
         public void Order_ApplyValidVoucher_ShouldApplyDiscount()
         {
             // Arrange
@@ -193,8 +193,8 @@ namespace Domain.Tests
         }
 
         [Fact(DisplayName = "Apply Invalid Voucher")]
-        [Trait("Category", "Sales - Order")]
-        public void Order_ApplyInvalidvoucher_ShouldNotApplyDiscount()
+        [Trait("Category", "Sales - Voucher")]
+        public void Order_ApplyInvalidVoucher_ShouldNotApplyDiscount()
         {
             // Arrange
             var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
@@ -209,7 +209,7 @@ namespace Domain.Tests
 
 
         [Fact(DisplayName = "Apply Valid Voucher - Discount Value From Total")]
-        [Trait("Category", "Sales - Order")]
+        [Trait("Category", "Sales - Voucher")]
         public void Order_ApplyValidVoucher_ShouldDiscountFromTotal()
         {
             // Arrange
@@ -227,7 +227,7 @@ namespace Domain.Tests
         }
 
         [Fact(DisplayName = "Apply Valid Voucher - Discount Percentual From Total")]
-        [Trait("Category", "Sales - Order")]
+        [Trait("Category", "Sales - Voucher")]
         public void Order_ApplyValidVoucher_ShouldDiscountPercentualFromTotal()
         {
             // Arrange
@@ -242,6 +242,61 @@ namespace Domain.Tests
 
             // Assert
             Assert.Equal(valueWithDiscount, order.TotalValue);
+        }
+
+        [Fact(DisplayName = "Validate Valid Voucher - Voucher Bigger Than Order Cost (value type)")]
+        [Trait("Category", "Sales - Voucher")]
+        public void Order_ApplyValidVoucherBiggerThenTotalValueType_ShouldReturnOrderTotalValueZero()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var item = new Item(Guid.NewGuid(), "product x", 2, 100.00M);
+            order.AddItem(item);
+            var voucher = new Voucher("PROMO 15 DOLLARS", 500, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value);
+
+            // Act
+            var result = order.ApplyVoucher(voucher);
+
+            // Assert
+            Assert.Equal(0, order.TotalValue);
+        }
+        
+        [Fact(DisplayName = "Validate Valid Voucher - Voucher Bigger Than Order Cost (percentage type)")]
+        [Trait("Category", "Sales - Voucher")]
+        public void Order_ApplyValidVoucherBiggerThenTotalPercentageType_ShouldReturnOrderTotalValueZero()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var item = new Item(Guid.NewGuid(), "product x", 2, 100.00M);
+            order.AddItem(item);
+            var voucher = new Voucher("PROMO 15 DOLLARS", null, 110, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Percentage);
+
+            // Act
+            var result = order.ApplyVoucher(voucher);
+
+            // Assert
+            Assert.Equal(0, order.TotalValue);
+        }
+
+        [Fact(DisplayName = "Validate Valid Voucher - After Several Changes")]
+        [Trait("Category", "Sales - Voucher")]
+        public void Order_ApplyValidVoucherAfterChanges_ShouldReturnOrderTotalWithDiscount()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var item = new Item(Guid.NewGuid(), "product x", 2, 100.00M);
+            order.AddItem(item);
+            var voucher = new Voucher("PROMO 15 DOLLARS", 150, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value);
+            
+            var result = order.ApplyVoucher(voucher);
+            var item2 = new Item(Guid.NewGuid(), "product x", 3, 150.00M);
+            
+            // Act
+            order.AddItem(item2);
+
+            // Assert
+            var totalOrderValue = order.Items.Sum(i => i.Value * i.Quantity) - voucher.DiscountValue;
+            Assert.Equal(totalOrderValue, order.TotalValue);
         }
     }
 }
