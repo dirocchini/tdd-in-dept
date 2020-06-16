@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Sales.Domain
 {
-    public class Order
+    public class Order : Entity
     {
         public static int MAX_ITEM_QUANTITY_PER_ITEM => 15;
         public static int MIN_ITEM_QUANTITY_PER_ITEM => 1;
