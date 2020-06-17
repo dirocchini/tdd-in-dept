@@ -63,7 +63,7 @@ namespace Sales.Domain
             if (quantity > MAX_ITEM_QUANTITY_PER_ITEM) throw new DomainException($"Item max quantity allowed: {MAX_ITEM_QUANTITY_PER_ITEM}. Quantity received: {item.Quantity}");
         }
 
-        private bool ItemExists(Item item)
+        public bool ItemExists(Item item)
         {
             return _items.Any(p => p.Id == item.Id);
         }
