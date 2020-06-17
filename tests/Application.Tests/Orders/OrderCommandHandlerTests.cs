@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Win32.SafeHandles;
 using Moq;
 using Moq.AutoMock;
 using Sales.Application.Commands;
