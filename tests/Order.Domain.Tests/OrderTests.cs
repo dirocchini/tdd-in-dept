@@ -183,7 +183,7 @@ namespace Domain.Tests
         {
             // Arrange
             var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
-            var voucher = new Voucher("PROMO 15 DOLLARS", 15, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value);
+            var voucher = new Voucher(new VoucherSettings("PROMO 15 DOLLARS", 15, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value));
 
             // Act
             var result = order.ApplyVoucher(voucher);
@@ -198,7 +198,7 @@ namespace Domain.Tests
         {
             // Arrange
             var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
-            var voucher = new Voucher("PROMO 15 DOLLARS", 15, null, 1, DateTime.Now.AddYears(-1), true, false, VoucherType.Value);
+            var voucher = new Voucher(new VoucherSettings("PROMO 15 DOLLARS", 15, null, 1, DateTime.Now.AddYears(-1), true, false, VoucherType.Value));
 
             // Act
             var result = order.ApplyVoucher(voucher);
@@ -216,7 +216,7 @@ namespace Domain.Tests
             var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
             var item = new Item(Guid.NewGuid(), "product x", 2, 100.00M);
             order.AddItem(item);
-            var voucher = new Voucher("PROMO 15 DOLLARS", 15, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value);
+            var voucher = new Voucher(new VoucherSettings("PROMO 15 DOLLARS", 15, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value));
             var valueWithDiscount = order.TotalValue - voucher.DiscountValue;
 
             // Act
@@ -234,8 +234,8 @@ namespace Domain.Tests
             var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
             var item = new Item(Guid.NewGuid(), "product x", 2, 100.00M);
             order.AddItem(item);
-            var voucher = new Voucher("PROMO 15 DOLLARS", null, 10, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Percentage);
-            var valueWithDiscount = order.TotalValue - (order.TotalValue * voucher.DiscountPercentual.Value / 100);
+            var voucher = new Voucher(new VoucherSettings("PROMO 15 DOLLARS", null, 10, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Percentage));
+            var valueWithDiscount = order.TotalValue - (order.TotalValue * voucher.DiscountPercentage.Value / 100);
 
             // Act
             var result = order.ApplyVoucher(voucher);
@@ -252,7 +252,7 @@ namespace Domain.Tests
             var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
             var item = new Item(Guid.NewGuid(), "product x", 2, 100.00M);
             order.AddItem(item);
-            var voucher = new Voucher("PROMO 15 DOLLARS", 500, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value);
+            var voucher = new Voucher(new VoucherSettings("PROMO 15 DOLLARS", 500, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value));
 
             // Act
             var result = order.ApplyVoucher(voucher);
@@ -269,7 +269,7 @@ namespace Domain.Tests
             var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
             var item = new Item(Guid.NewGuid(), "product x", 2, 100.00M);
             order.AddItem(item);
-            var voucher = new Voucher("PROMO 15 DOLLARS", null, 110, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Percentage);
+            var voucher = new Voucher(new VoucherSettings("PROMO 15 DOLLARS", null, 110, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Percentage));
 
             // Act
             var result = order.ApplyVoucher(voucher);
@@ -286,7 +286,7 @@ namespace Domain.Tests
             var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
             var item = new Item(Guid.NewGuid(), "product x", 2, 100.00M);
             order.AddItem(item);
-            var voucher = new Voucher("PROMO 15 DOLLARS", 150, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value);
+            var voucher = new Voucher(new VoucherSettings("PROMO 15 DOLLARS", 150, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value));
             
             var result = order.ApplyVoucher(voucher);
             var item2 = new Item(Guid.NewGuid(), "product x", 3, 150.00M);
