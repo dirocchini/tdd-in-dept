@@ -9,7 +9,7 @@ namespace Core.Messages
         public DateTime Timestamp { get; set; }
         public ValidationResult ValidationResult { get; set; }
 
-        public Command()
+        protected Command()
         {
             Timestamp = DateTime.Now;
         }

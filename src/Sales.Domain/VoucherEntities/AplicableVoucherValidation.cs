@@ -46,7 +46,7 @@ namespace Sales.Domain.VoucherEntities
 
             When(f => f.VoucherType == VoucherType.Percentage, () =>
             {
-                RuleFor(f => f.DiscountPercentual)
+                RuleFor(f => f.DiscountPercentage)
                     .NotNull()
                     .WithMessage(DiscountTypePercentualErrorMsg)
                     .GreaterThan(0)

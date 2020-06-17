@@ -16,7 +16,7 @@ namespace Domain.Tests
         public void Voucher_ValidatedVoucherValueType_ShouldBeValid()
         {
             // Arrange
-            var voucher = new Voucher("PROMO 15 DAYS", 150, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value);
+            var voucher = new Voucher(new VoucherSettings("PROMO 15 DAYS", 150, null, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Value));
 
             // Act
             var result = voucher.Validate();
@@ -30,7 +30,7 @@ namespace Domain.Tests
         public void Voucher_ValidatedVoucherValueType_ShouldBeInvalid()
         {
             // Arrange
-            var voucher = new Voucher("", null, null, 0, DateTime.Now.AddYears(-1), false, true, VoucherType.Value);
+            var voucher = new Voucher(new VoucherSettings("", null, null, 0, DateTime.Now.AddYears(-1), false, true, VoucherType.Value));
 
             // Act
             var result = voucher.Validate();
@@ -51,7 +51,7 @@ namespace Domain.Tests
         public void Voucher_ValidatedVoucherPercentageType_ShouldBeValid()
         {
             // Arrange
-            var voucher = new Voucher("PROMO 15 DAYS", null, 15, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Percentage);
+            var voucher = new Voucher(new VoucherSettings("PROMO 15 DAYS", null, 15, 1, DateTime.Now.AddYears(1), true, false, VoucherType.Percentage));
 
             // Act
             var result = voucher.Validate();
@@ -65,7 +65,7 @@ namespace Domain.Tests
         public void Voucher_ValidatedVoucherPercentageType_ShouldBeInvalid()
         {
             // Arrange
-            var voucher = new Voucher("", null, null, 0, DateTime.Now.AddYears(-1), false, true, VoucherType.Percentage);
+            var voucher = new Voucher(new VoucherSettings("", null, null, 0, DateTime.Now.AddYears(-1), false, true, VoucherType.Percentage));
 
             // Act
             var result = voucher.Validate();

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Core.Messages;
-using MediatR;
 
 namespace Sales.Application.Events
 {

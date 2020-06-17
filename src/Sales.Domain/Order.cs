@@ -148,9 +148,9 @@ namespace Sales.Domain
             }
             else
             {
-                if (Voucher.DiscountPercentual.HasValue)
+                if (Voucher.DiscountPercentage.HasValue)
                 {
-                    DiscountValue = TotalValue * Voucher.DiscountPercentual.Value / 100;
+                    DiscountValue = TotalValue * Voucher.DiscountPercentage.Value / 100;
                     TotalValue -= DiscountValue;
                 }
             }
