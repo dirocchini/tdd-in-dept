@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Sales.Domain
 {
-    public class Order
+    public class Order : Entity, IAggregateRoot
     {
         public static int MAX_ITEM_QUANTITY_PER_ITEM => 15;
         public static int MIN_ITEM_QUANTITY_PER_ITEM => 1;
@@ -63,7 +63,7 @@ namespace Sales.Domain
             if (quantity > MAX_ITEM_QUANTITY_PER_ITEM) throw new DomainException($"Item max quantity allowed: {MAX_ITEM_QUANTITY_PER_ITEM}. Quantity received: {item.Quantity}");
         }
 
-        private bool ItemExists(Item item)
+        public bool ItemExists(Item item)
         {
             return _items.Any(p => p.Id == item.Id);
         }

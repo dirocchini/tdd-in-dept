@@ -7,4 +7,7 @@
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ab80fe9c_002Dc079_002D4e38_002Db9b4_002D7816eb813cca/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="OrderTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Solution /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c8e27f48_002D318e_002D417f_002D887f_002D8267464e2c83/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AddOrderItem_OrderInDraft_ShouldAddItem" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Solution /&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

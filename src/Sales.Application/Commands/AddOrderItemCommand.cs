@@ -1,6 +1,7 @@
 ﻿using System;
 using Core.Messages;
 using FluentValidation;
+using MediatR;
 using Sales.Domain;
 
 namespace Sales.Application.Commands
