@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Bogus;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NerdStore.WebApp.MVC;
@@ -35,7 +36,7 @@ namespace NerdStore.WebApp.Tests.Config
         {
             var clientOption = new WebApplicationFactoryClientOptions
             {
-
+                HandleCookies = true
             };
 
             Factory = new LojaAppFactory<TStartup>();
@@ -64,6 +65,30 @@ namespace NerdStore.WebApp.Tests.Config
                 return requestVerificationTokenMatch.Groups[1].Captures[0].Value;
 
             throw new ArgumentException($"Anti forgery token '{AntiForgeryFieldName}' não encontrado no HTML", nameof(htmlBody));
+        }
+
+        public async Task RealizarLogin()
+        {
+            var initialResponse = await Client.GetAsync("/Identity/Account/Login");
+            initialResponse.EnsureSuccessStatusCode();
+
+            var antiForgeryToken =
+                ObterAntiForgeryToken(await initialResponse.Content.ReadAsStringAsync());
+
+            var formData = new Dictionary<string, string>
+            {
+                {AntiForgeryFieldName, antiForgeryToken},
+                {"Input.Email", "teste@teste.com"},
+                {"Input.Password", "Teste@123"}
+            };
+
+            var postRequest = new HttpRequestMessage(HttpMethod.Post, "/Identity/Account/Login")
+            {
+                Content = new FormUrlEncodedContent(formData)
+
+            };
+
+            await Client.SendAsync(postRequest);
         }
     }
 }
