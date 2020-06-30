@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using AutoMapper.Configuration;
 using Features.Tests;
-using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
 using NerdStore.WebApp.MVC;
 using NerdStore.WebApp.Tests.Config;
 using Xunit;

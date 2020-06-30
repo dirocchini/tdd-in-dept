@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Features.Tests;
-using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
 using NerdStore.WebApp.MVC;
 using NerdStore.WebApp.MVC.Models;
 using NerdStore.WebApp.Tests.Config;
@@ -45,6 +41,25 @@ namespace NerdStore.WebApp.Tests
 
             // Assert
             postResponse.EnsureSuccessStatusCode();
+        }
+
+
+
+        [Fact(DisplayName = "Remover item em pedido existente"), TestPriority(2)]
+        [Trait("Categoria", "Integração API - Pedido")]
+        public async Task RemoverItem_NovoPedido_DeveRetornarComSucesso()
+        {
+            // Arrange
+            var productId = new Guid("4251ebd0-0e7e-4169-8ea6-50588d6f1714");
+
+            await _testsFixture.RealizarLoginApi();
+            _testsFixture.Client.AtribuirToken(_testsFixture.UsuarioToken);
+
+            // Act
+            var deleteResponse = await _testsFixture.Client.DeleteAsync($"api/carrinho/{productId}");
+
+            // Assert
+            deleteResponse.EnsureSuccessStatusCode();
         }
     }
 }
