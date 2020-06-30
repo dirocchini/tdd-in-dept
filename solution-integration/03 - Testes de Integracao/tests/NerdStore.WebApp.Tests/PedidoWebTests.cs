@@ -39,7 +39,7 @@ namespace NerdStore.WebApp.Tests
                 {"quantidade", quantity.ToString()}
             };
 
-            await _testsFixture.RealizarLogin();
+            await _testsFixture.RealizarLoginWeb();
 
             var postRequest = new HttpRequestMessage(HttpMethod.Post, "/meu-carrinho")
             {

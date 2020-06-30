@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Bogus;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NerdStore.WebApp.MVC;
+using NerdStore.WebApp.MVC.Models;
 using Xunit;
 
 namespace NerdStore.WebApp.Tests.Config
@@ -23,11 +25,12 @@ namespace NerdStore.WebApp.Tests.Config
     }
 
 
-    public class  IntegrationTestsFixture<TStartup> : IDisposable where TStartup : class
+    public class IntegrationTestsFixture<TStartup> : IDisposable where TStartup : class
     {
         public string AntiForgeryFieldName = "__RequestVerificationToken";
         public string UsuarioEmail = "__RequestVerificationToken";
-        public string UsuarioSenha= "__RequestVerificationToken";
+        public string UsuarioSenha = "__RequestVerificationToken";
+        public string UsuarioToken = string.Empty;
 
         public readonly LojaAppFactory<TStartup> Factory;
         public HttpClient Client;
@@ -62,15 +65,17 @@ namespace NerdStore.WebApp.Tests.Config
         public string ObterAntiForgeryToken(string htmlBody)
         {
             var requestVerificationTokenMatch =
-                Regex.Match(htmlBody, $@"\<input name=""{AntiForgeryFieldName}"" type=""hidden"" value=""([^""]+)"" \/\>");
+                Regex.Match(htmlBody,
+                    $@"\<input name=""{AntiForgeryFieldName}"" type=""hidden"" value=""([^""]+)"" \/\>");
 
             if (requestVerificationTokenMatch.Success)
                 return requestVerificationTokenMatch.Groups[1].Captures[0].Value;
 
-            throw new ArgumentException($"Anti forgery token '{AntiForgeryFieldName}' não encontrado no HTML", nameof(htmlBody));
+            throw new ArgumentException($"Anti forgery token '{AntiForgeryFieldName}' não encontrado no HTML",
+                nameof(htmlBody));
         }
 
-        public async Task RealizarLogin()
+        public async Task RealizarLoginWeb()
         {
             var initialResponse = await Client.GetAsync("/Identity/Account/Login");
             initialResponse.EnsureSuccessStatusCode();
@@ -92,6 +97,22 @@ namespace NerdStore.WebApp.Tests.Config
             };
 
             await Client.SendAsync(postRequest);
+        }
+
+        public async Task RealizarLoginApi()
+        {
+            var loginVm = new LoginViewModel
+            {
+                Email = "teste@teste.com",
+                Senha = "Teste@123"
+            };
+
+            Client = Factory.CreateClient();
+            
+            var response = await Client.PostAsJsonAsync("api/Login", loginVm);
+            response.EnsureSuccessStatusCode();
+
+            UsuarioToken = await response.Content.ReadAsStringAsync();
         }
     }
 }
