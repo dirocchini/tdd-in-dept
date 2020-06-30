@@ -36,7 +36,10 @@ namespace NerdStore.WebApp.Tests.Config
         {
             var clientOption = new WebApplicationFactoryClientOptions
             {
-                HandleCookies = true
+                AllowAutoRedirect = true,
+                HandleCookies = true,
+                BaseAddress = new Uri("http://localhost"),
+                MaxAutomaticRedirections = 7
             };
 
             Factory = new LojaAppFactory<TStartup>();

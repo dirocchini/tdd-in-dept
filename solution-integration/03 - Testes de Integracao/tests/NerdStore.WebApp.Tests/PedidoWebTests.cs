@@ -55,7 +55,11 @@ namespace NerdStore.WebApp.Tests
                 .Result
                 .All;
 
-            var formQuantity = html?.FirstOrDefault(c => c.Id == "quantidade")?.GetAttribute("value");
+            var formQuantity = html?.FirstOrDefault(c => c.Id == "quantidade")?.GetAttribute("value").ApenasNumeros();
+            var valorUnitario = html?.FirstOrDefault(c => c.Id == "valorUnitario")?.TextContent.Split(".")[0]?.ApenasNumeros();
+            var valorTotal = html?.FirstOrDefault(c => c.Id == "valorTotal")?.TextContent.Split(".")[0]?.ApenasNumeros();
+
+            Assert.Equal(valorTotal, valorUnitario * formQuantity);
 
         }
     }
