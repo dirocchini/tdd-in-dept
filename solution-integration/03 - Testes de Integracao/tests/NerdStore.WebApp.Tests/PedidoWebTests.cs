@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using AngleSharp.Html.Parser;
-using Features.Tests;
 using NerdStore.WebApp.MVC;
 using NerdStore.WebApp.Tests.Config;
 using Xunit;
@@ -39,7 +37,7 @@ namespace NerdStore.WebApp.Tests
                 {"quantidade", quantity.ToString()}
             };
 
-            await _testsFixture.RealizarLogin();
+            await _testsFixture.RealizarLoginWeb();
 
             var postRequest = new HttpRequestMessage(HttpMethod.Post, "/meu-carrinho")
             {
